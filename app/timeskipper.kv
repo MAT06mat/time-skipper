@@ -1,0 +1,53 @@
+<Root>:
+    md_bg_color: self.theme_cls.surfaceColor
+    AnchorLayout:
+        anchor_x: "right"
+        anchor_y: "top"
+        padding: dp(10)
+        MDBoxLayout:
+            adaptive_size: True
+            spacing: dp(10)
+            MDIconButton:
+                style: "standard"
+                icon: "white-balance-sunny" if self.theme_cls.theme_style == "Light" else "moon-waning-crescent"
+                on_release: root.switch_theme()
+            MDIconButton:
+                style: "standard"
+                icon: "cog"
+                on_release: root.select_time()
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        MDBoxLayout:
+            adaptive_height: True
+            orientation: "vertical"
+            spacing: dp(40)
+            halign: "center"
+            size_hint_x: 0.6
+            Widget:
+                size_hint_y: None
+                height: dp(20)
+            MDBoxLayout:
+                adaptive_height: True
+                spacing: dp(20)
+                valign: "center"
+                Widget:
+                    size_hint_x: None
+                    width: dp(15)
+                MDLinearProgressIndicator:
+                    id: progress
+                    type: "determinate"
+                    running_determinate_transition: "linear"
+                MDLabel:
+                    id: percent
+                    text: "0%"
+                    size_hint: None, 1
+                    halign: "center"
+                    valign: "center"
+                    width: dp(35)
+            MDLabel:
+                id: time
+                height: dp(20)
+                size_hint_y: None
+                halign: "center"
+                valign: "center"
