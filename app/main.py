@@ -13,6 +13,16 @@ if __name__ == "__main__":
         store = ObjectProperty(None)
         icon = "images/icon.png"
 
+        def define(self, key, default):
+            if not self.store.exists(key):
+                self.store[key] = {"value": default}
+
+        def get(self, key):
+            return self.store[key]["value"]
+
+        def set(self, key, value):
+            self.store[key] = {"value": value}
+
         def build(self):
             LabelBase.register(
                 name="ShareTechMono",
@@ -20,15 +30,17 @@ if __name__ == "__main__":
             )
             os.makedirs(".cache", exist_ok=True)
             self.store = JsonStore(".cache/settings.json")
-            if not self.store.exists("theme"):
-                self.theme_cls.theme_style = "Dark"
-                self.store["theme"] = {"value": "Dark"}
-            else:
-                self.theme_cls.theme_style = self.store["theme"]["value"]
-            if not self.store.exists("time_edit"):
-                self.store["time_edit"] = {"value": False}
 
-            self.theme_cls.primary_palette = "Teal"
+            # Define theme
+            self.define("theme", "Dark")
+            self.theme_cls.theme_style = self.get("theme")
+
+            # Define palette
+            self.define("palette", "Teal")
+            self.theme_cls.primary_palette = self.get("palette")
+
+            # Define time_edit
+            self.define("time_edit", False)
 
             self.root = Root()
             return self.root

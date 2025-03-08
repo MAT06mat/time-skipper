@@ -28,7 +28,15 @@ class Root(MDScreen):
         self.theme_cls.theme_style = (
             "Light" if self.theme_cls.theme_style == "Dark" else "Dark"
         )
-        self.app.store["theme"] = {"value": self.theme_cls.theme_style}
+        self.app.set("theme", self.theme_cls.theme_style)
+
+    def switch_palette(self):
+        all_palettes = ["Teal", "Olive", "Purple", "Red"]
+        i = all_palettes.index(self.theme_cls.primary_palette)
+        i += 1
+        i %= len(all_palettes)
+        self.theme_cls.primary_palette = all_palettes[i]
+        self.app.set("palette", self.theme_cls.primary_palette)
 
     def open_time_picker(self, time_obj=None):
         if time_obj:
@@ -37,7 +45,7 @@ class Root(MDScreen):
             hour, minute = time.strftime("%H:%M", time.localtime()).split(":")
             kwargs = {"hour": hour, "minute": minute}
 
-        if not self.app.store["time_edit"]["value"]:
+        if not self.app.get("time_edit"):
             if self.theme_cls.device_orientation == "landscape":
                 self.time_picker = MDTimePickerDialHorizontal(**kwargs)
             else:
@@ -53,9 +61,7 @@ class Root(MDScreen):
         )
 
     def time_switch_edit(self, *args):
-        self.app.store["time_edit"] = {
-            "value": not self.app.store["time_edit"]["value"]
-        }
+        self.app.set("time_edit", not self.app.get("time_edit"))
         Clock.schedule_once(
             lambda x: self.open_time_picker(self.time_picker.time),
             0.1,
