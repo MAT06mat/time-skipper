@@ -12,9 +12,7 @@ import time
 
 
 class Root(MDScreen):
-    time_picker_horizontal: MDTimePickerDialHorizontal = ObjectProperty(allownone=True)
-    time_picker_vertical: MDTimePickerDialVertical = ObjectProperty(allownone=True)
-    time_picker_input: MDTimePickerInput = ObjectProperty(allownone=True)
+    time_picker: MDTimePickerDialHorizontal = ObjectProperty(allownone=True)
 
     start_time = NumericProperty(0)
     end_time = NumericProperty(0)
@@ -32,111 +30,60 @@ class Root(MDScreen):
         )
         self.app.store["theme"] = {"value": self.theme_cls.theme_style}
 
-    def select_time(self, h=None, m=None):
-        hour, minutes = time.strftime("%H:%M", time.localtime()).split(":")
+    def open_time_picker(self, h=None, m=None):
+        hour, minute = time.strftime("%H:%M", time.localtime()).split(":")
         if not self.app.store["time_edit"]["value"]:
-            (
-                self.open_time_picker_horizontal(h if h else hour, m if m else minutes)
-                if self.theme_cls.device_orientation == "landscape"
-                else self.open_time_picker_vertical(
-                    h if h else hour, m if m else minutes
+            if self.theme_cls.device_orientation == "landscape":
+                self.time_picker = MDTimePickerDialHorizontal(
+                    hour=h if h else hour, minute=m if m else minute
                 )
-            )
+            else:
+                self.time_picker = MDTimePickerDialVertical(
+                    hour=h if h else hour, minute=m if m else minute
+                )
         else:
-            self.open_time_picker_input(h if h else hour, m if m else minutes)
+            self.time_picker = MDTimePickerInput(
+                hour=h if h else hour, minute=m if m else minute
+            )
+        self.time_picker.open()
+        self.time_picker.bind(
+            on_edit=self.time_switch_edit,
+            on_ok=self.on_time_picker_ok,
+            on_cancel=self.on_time_picker_cancel,
+            on_dismiss=self.on_time_picker_dismiss,
+        )
 
     def time_switch_edit(self, *args):
-        if self.time_picker_input:
-            self.app.store["time_edit"] = {"value": False}
-            self.time_picker_input.dismiss()
-            hour = str(self.time_picker_input.time.hour)
-            minute = str(self.time_picker_input.time.minute)
-            Clock.schedule_once(
-                lambda x: self.select_time(hour, minute),
-                0.1,
-            )
-        elif self.time_picker_horizontal:
-            self.app.store["time_edit"] = {"value": True}
-            self.time_picker_horizontal.dismiss()
-            hour = str(self.time_picker_horizontal.time.hour)
-            minute = str(self.time_picker_horizontal.time.minute)
-            Clock.schedule_once(
-                lambda x: self.select_time(hour, minute),
-                0.1,
-            )
-        elif self.time_picker_vertical:
-            self.app.store["time_edit"] = {"value": True}
-            self.time_picker_vertical.dismiss()
-            hour = str(self.time_picker_vertical.time.hour)
-            minute = str(self.time_picker_vertical.time.minute)
-            Clock.schedule_once(
-                lambda x: self.select_time(hour, minute),
-                0.1,
-            )
+        self.app.store["time_edit"] = {
+            "value": not self.app.store["time_edit"]["value"]
+        }
+        hour = str(self.time_picker.time.hour)
+        minute = str(self.time_picker.time.minute)
+        self.time_picker.dismiss()
+        Clock.schedule_once(
+            lambda x: self.open_time_picker(hour, minute),
+            0.1,
+        )
 
     def check_orientation(self, instance, orientation):
-        if orientation == "portrait" and self.time_picker_horizontal:
-            self.time_picker_horizontal.dismiss()
-            hour = str(self.time_picker_horizontal.time.hour)
-            minute = str(self.time_picker_horizontal.time.minute)
-            Clock.schedule_once(
-                lambda x: self.open_time_picker_vertical(hour, minute),
-                0.1,
-            )
-        elif orientation == "landscape" and self.time_picker_vertical:
-            self.time_picker_vertical.dismiss()
-            hour = str(self.time_picker_vertical.time.hour)
-            minute = str(self.time_picker_vertical.time.minute)
-            Clock.schedule_once(
-                lambda x: self.open_time_picker_horizontal(hour, minute),
-                0.1,
-            )
-
-    def open_time_picker_horizontal(self, hour, minute):
-        self.time_picker_vertical = None
-        self.time_picker_input = None
-        self.time_picker_horizontal = MDTimePickerDialHorizontal(
-            hour=hour, minute=minute
-        )
-        self.time_picker_horizontal.open()
-        self.time_picker_horizontal.bind(
-            on_edit=self.time_switch_edit,
-            on_ok=self.on_time_picker_ok,
-            on_cancel=self.on_time_picker_cancel,
-            on_dismiss=self.on_time_picker_dismiss,
-        )
-
-    def open_time_picker_vertical(self, hour, minute):
-        self.time_picker_horizontal = None
-        self.time_picker_input = None
-        self.time_picker_vertical = MDTimePickerDialVertical(hour=hour, minute=minute)
-        self.time_picker_vertical.open()
-        self.time_picker_vertical.bind(
-            on_edit=self.time_switch_edit,
-            on_ok=self.on_time_picker_ok,
-            on_cancel=self.on_time_picker_cancel,
-            on_dismiss=self.on_time_picker_dismiss,
-        )
-
-    def open_time_picker_input(self, hour, minute):
-        self.time_picker_horizontal = None
-        self.time_picker_vertical = None
-        self.time_picker_input = MDTimePickerInput(hour=hour, minute=minute)
-        self.time_picker_input.open()
-        self.time_picker_input.bind(
-            on_edit=self.time_switch_edit,
-            on_ok=self.on_time_picker_ok,
-            on_cancel=self.on_time_picker_cancel,
-            on_dismiss=self.on_time_picker_dismiss,
+        if not isinstance(
+            self.time_picker, (MDTimePickerDialHorizontal, MDTimePickerDialVertical)
+        ):
+            return
+        hour = str(self.time_picker.time.hour)
+        minute = str(self.time_picker.time.minute)
+        self.time_picker.dismiss()
+        Clock.schedule_once(
+            lambda x: self.open_time_picker(hour, minute),
+            0.1,
         )
 
     def on_time_picker_cancel(self, instance):
         instance.dismiss()
 
     def on_time_picker_dismiss(self, instance):
-        self.time_picker_horizontal = None
-        self.time_picker_vertical = None
-        self.time_picker_input = None
+        if isinstance(instance, type(self.time_picker)):
+            self.time_picker = None
 
     def on_time_picker_ok(self, instance):
         user_h = instance.time.hour
@@ -168,11 +115,11 @@ class Root(MDScreen):
         restant_time = max(round(time_to_wait - current_relative_time), 0)
         s = restant_time % 60
         m = restant_time // 60 % 60
-        h = restant_time // 60 // 60
+        h = (restant_time - m - s) // 3600
         if h:
-            self.ids.time.text = f"{h}:{m}:{s}"
+            self.ids.time.text = f"{h:02}:{m:02}:{s:02}"
         elif m or s:
-            self.ids.time.text = f"{m}:{s}"
+            self.ids.time.text = f"{m:02}:{s:02}"
         else:
             self.ids.time.text = ""
 

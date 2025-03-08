@@ -14,7 +14,7 @@
             MDIconButton:
                 style: "standard"
                 icon: "cog"
-                on_release: root.select_time()
+                on_release: root.open_time_picker()
     AnchorLayout:
         anchor_x: "center"
         anchor_y: "center"
@@ -33,7 +33,7 @@
                 valign: "center"
                 Widget:
                     size_hint_x: None
-                    width: dp(15)
+                    width: dp(30)
                 MDLinearProgressIndicator:
                     id: progress
                     type: "determinate"
@@ -42,12 +42,22 @@
                     id: percent
                     text: "0%"
                     size_hint: None, 1
-                    halign: "center"
+                    halign: "left"
                     valign: "center"
-                    width: dp(35)
+                    width: dp(50)
+                    theme_font_name: "Custom"
+                    font_name: "ShareTechMono"
+                    theme_font_size: "Custom"
+                    font_size: "20dp"
+                    color: self.theme_cls.primaryColor
             MDLabel:
                 id: time
-                height: dp(20)
+                height: dp(50)
                 size_hint_y: None
                 halign: "center"
                 valign: "center"
+                theme_font_name: "Custom"
+                font_name: "ShareTechMono"
+                theme_font_size: "Custom"
+                font_size: "30dp"
+                color: self.theme_cls.primaryColor
