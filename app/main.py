@@ -1,4 +1,4 @@
-__version__ = "0.0.0"
+__version__ = "1.0"
 
 if __name__ == "__main__":
     from kivymd.app import MDApp
