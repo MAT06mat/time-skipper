@@ -37,7 +37,7 @@ def copy_apk(version):
     rep = input("Do you want a copy out of the vm ? (y/n) ")
     if rep.lower() == "y":
         os.system(
-            f"cp -R ./bin/time-skipper-{version}-armeabi-v7a_arm64-v8a-debug.apk /mnt/time-skipper/time-skipper-{version}-armeabi-v7a_arm64-v8a-debug.apk"
+            f"cp -R ./bin/timeskipper-{version}-armeabi-v7a_arm64-v8a-debug.apk /mnt/time-skipper/timeskipper-{version}-armeabi-v7a_arm64-v8a-debug.apk"
         )
         print(f"{Style.BRIGHT}{Fore.GREEN}Copy done !{Fore.BLACK}")
 

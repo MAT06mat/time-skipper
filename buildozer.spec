@@ -4,10 +4,10 @@
 title = Time Skipper
 
 # (str) Package name
-package.name = time-skipper
+package.name = timeskipper
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = com.matthieufelten.time-skipper
+package.domain = com.matthieufelten.timeskipper
 
 # (str) Source code where the main.py live
 source.dir = app
