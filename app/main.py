@@ -12,6 +12,7 @@ if __name__ == "__main__":
     class TimeSkipperApp(MDApp):
         root = ObjectProperty(None)
         store = ObjectProperty(None)
+        icon = "images/icon.png"
 
         def build(self):
             LabelBase.register(
@@ -20,8 +21,8 @@ if __name__ == "__main__":
             )
             self.store = JsonStore(".cache/settings.json")
             if not self.store.exists("theme"):
-                self.theme_cls.theme_style = "Light"
-                self.store["theme"] = {"value": "Light"}
+                self.theme_cls.theme_style = "Dark"
+                self.store["theme"] = {"value": "Dark"}
             else:
                 self.theme_cls.theme_style = self.store["theme"]["value"]
             if not self.store.exists("time_edit"):
