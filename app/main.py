@@ -5,7 +5,6 @@ if __name__ == "__main__":
     from kivy.properties import ObjectProperty
     from kivy.storage.jsonstore import JsonStore
     from kivy.core.text import LabelBase
-    from kivy.metrics import sp
     from root import Root
     import os
 
@@ -19,6 +18,7 @@ if __name__ == "__main__":
                 name="ShareTechMono",
                 fn_regular="fonts/ShareTechMono-Regular.ttf",
             )
+            os.makedirs(".cache", exist_ok=True)
             self.store = JsonStore(".cache/settings.json")
             if not self.store.exists("theme"):
                 self.theme_cls.theme_style = "Dark"
@@ -33,5 +33,4 @@ if __name__ == "__main__":
             self.root = Root()
             return self.root
 
-    os.makedirs(".cache", exist_ok=True)
     TimeSkipperApp().run()
