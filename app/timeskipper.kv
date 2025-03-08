@@ -1,3 +1,14 @@
+<BLueLabel@MDLabel>:
+    id: clock
+    halign: "center"
+    valign: "center"
+    size_hint: (None, None)
+    theme_font_name: "Custom"
+    font_name: "ShareTechMono"
+    theme_font_size: "Custom"
+    font_size: "20dp"
+    color: self.theme_cls.primaryColor
+
 <Root>:
     md_bg_color: self.theme_cls.surfaceColor
     AnchorLayout:
@@ -15,6 +26,16 @@
                 style: "standard"
                 icon: "cog"
                 on_release: root.open_time_picker()
+    AnchorLayout:
+        anchor_x: "left"
+        anchor_y: "top"
+        padding: dp(10)
+        BLueLabel:
+            id: clock
+            halign: "left"
+            width: dp(150)
+            height: dp(45)
+            padding: dp(10)
     AnchorLayout:
         anchor_x: "center"
         anchor_y: "center"
@@ -38,26 +59,14 @@
                     id: progress
                     type: "determinate"
                     running_determinate_transition: "linear"
-                MDLabel:
+                BLueLabel:
                     id: percent
                     text: "0%"
-                    size_hint: None, 1
+                    size_hint_y: 1
                     halign: "left"
-                    valign: "center"
                     width: dp(50)
-                    theme_font_name: "Custom"
-                    font_name: "ShareTechMono"
-                    theme_font_size: "Custom"
-                    font_size: "20dp"
-                    color: self.theme_cls.primaryColor
-            MDLabel:
+            BLueLabel:
                 id: time
                 height: dp(50)
-                size_hint_y: None
-                halign: "center"
-                valign: "center"
-                theme_font_name: "Custom"
-                font_name: "ShareTechMono"
-                theme_font_size: "Custom"
+                size_hint_x: 1
                 font_size: "30dp"
-                color: self.theme_cls.primaryColor

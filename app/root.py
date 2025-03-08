@@ -22,7 +22,7 @@ class Root(MDScreen):
         super().__init__(*args, **kwargs)
         self.theme_cls.bind(device_orientation=self.check_orientation)
         self.app = MDApp.get_running_app()
-        Clock.schedule_interval(self.update_progress, 1)
+        Clock.schedule_interval(self.update_progress, 1 / 30)
 
     def switch_theme(self):
         self.theme_cls.theme_style = (
@@ -30,21 +30,20 @@ class Root(MDScreen):
         )
         self.app.store["theme"] = {"value": self.theme_cls.theme_style}
 
-    def open_time_picker(self, h=None, m=None):
-        hour, minute = time.strftime("%H:%M", time.localtime()).split(":")
+    def open_time_picker(self, time_obj=None):
+        if time_obj:
+            kwargs = {"hour": str(time_obj.hour), "minute": str(time_obj.minute)}
+        else:
+            hour, minute = time.strftime("%H:%M", time.localtime()).split(":")
+            kwargs = {"hour": hour, "minute": minute}
+
         if not self.app.store["time_edit"]["value"]:
             if self.theme_cls.device_orientation == "landscape":
-                self.time_picker = MDTimePickerDialHorizontal(
-                    hour=h if h else hour, minute=m if m else minute
-                )
+                self.time_picker = MDTimePickerDialHorizontal(**kwargs)
             else:
-                self.time_picker = MDTimePickerDialVertical(
-                    hour=h if h else hour, minute=m if m else minute
-                )
+                self.time_picker = MDTimePickerDialVertical(**kwargs)
         else:
-            self.time_picker = MDTimePickerInput(
-                hour=h if h else hour, minute=m if m else minute
-            )
+            self.time_picker = MDTimePickerInput(**kwargs)
         self.time_picker.open()
         self.time_picker.bind(
             on_edit=self.time_switch_edit,
@@ -57,26 +56,22 @@ class Root(MDScreen):
         self.app.store["time_edit"] = {
             "value": not self.app.store["time_edit"]["value"]
         }
-        hour = str(self.time_picker.time.hour)
-        minute = str(self.time_picker.time.minute)
-        self.time_picker.dismiss()
         Clock.schedule_once(
-            lambda x: self.open_time_picker(hour, minute),
+            lambda x: self.open_time_picker(self.time_picker.time),
             0.1,
         )
+        self.time_picker.dismiss()
 
     def check_orientation(self, instance, orientation):
         if not isinstance(
             self.time_picker, (MDTimePickerDialHorizontal, MDTimePickerDialVertical)
         ):
             return
-        hour = str(self.time_picker.time.hour)
-        minute = str(self.time_picker.time.minute)
-        self.time_picker.dismiss()
         Clock.schedule_once(
-            lambda x: self.open_time_picker(hour, minute),
+            lambda x: self.open_time_picker(self.time_picker.time),
             0.1,
         )
+        self.time_picker.dismiss()
 
     def on_time_picker_cancel(self, instance):
         instance.dismiss()
@@ -93,7 +88,7 @@ class Root(MDScreen):
         h = user_h - int(th)
         m = user_m - int(tm)
         time_to_wait = h * 3600 + m * 60 - int(ts)
-        self.start_time = time.time()
+        self.start_time = round(time.time())
         self.end_time = self.start_time + time_to_wait
         self.ids.progress.stop()
         self.ids.progress.running_determinate_duration = time_to_wait
@@ -106,6 +101,7 @@ class Root(MDScreen):
         self.event = Clock.schedule_once(self.stop_bar, time_to_wait)
 
     def update_progress(self, *args):
+        self.ids.clock.text = time.strftime("%H:%M", time.localtime())
         if not self.start_time:
             return
         time_to_wait = self.end_time - self.start_time
