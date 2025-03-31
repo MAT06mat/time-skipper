@@ -74,3 +74,15 @@
                 height: dp(50)
                 size_hint_x: 1
                 font_size: "30dp"
+    AnchorLayout:
+        id: version
+        anchor_x: "left"
+        anchor_y: "bottom"
+        opacity: 0
+        padding: dp(10)
+        BLueLabel:
+            text: "v" + app.__version__
+            halign: "left"
+            width: dp(150)
+            height: dp(45)
+            padding: dp(10)

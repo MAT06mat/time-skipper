@@ -5,6 +5,7 @@ from kivymd.uix.pickers import (
 )
 from kivy.properties import ObjectProperty, NumericProperty
 from kivymd.uix.screen import MDScreen
+from kivy.animation import Animation
 from kivymd.app import MDApp
 from kivy.clock import Clock
 
@@ -22,6 +23,8 @@ class Root(MDScreen):
         super().__init__(*args, **kwargs)
         self.theme_cls.bind(device_orientation=self.check_orientation)
         self.app = MDApp.get_running_app()
+        self.anim_version_in = Animation(opacity=1, d=0.4)
+        self.anim_version_out = Animation(opacity=0, d=0.1)
         Clock.schedule_interval(self.update_progress, 1 / 30)
 
     def switch_theme(self):
@@ -39,6 +42,8 @@ class Root(MDScreen):
         self.app.set("palette", self.theme_cls.primary_palette)
 
     def open_time_picker(self, time_obj=None):
+        self.anim_version_out.stop(self.ids.version)
+        self.anim_version_in.start(self.ids.version)
         if time_obj:
             kwargs = {"hour": str(time_obj.hour), "minute": str(time_obj.minute)}
         else:
@@ -85,6 +90,8 @@ class Root(MDScreen):
     def on_time_picker_dismiss(self, instance):
         if isinstance(instance, type(self.time_picker)):
             self.time_picker = None
+            self.anim_version_in.stop(self.ids.version)
+            self.anim_version_out.start(self.ids.version)
 
     def on_time_picker_ok(self, instance):
         user_h = instance.time.hour
@@ -96,11 +103,6 @@ class Root(MDScreen):
         time_to_wait = h * 3600 + m * 60 - int(ts)
         self.start_time = round(time.time())
         self.end_time = self.start_time + time_to_wait
-        self.ids.progress.stop()
-        self.ids.progress.running_determinate_duration = time_to_wait
-        self.ids.progress.running_anim = None
-        self.ids.progress.catching_anim = None
-        self.ids.progress.start()
         self.update_progress()
         if self.event:
             Clock.unschedule(self.event)
@@ -113,7 +115,9 @@ class Root(MDScreen):
         time_to_wait = self.end_time - self.start_time
         current_relative_time = time.time() - self.start_time
         percent = current_relative_time / time_to_wait * 100
-        self.ids.percent.text = f"{max(min(round(percent), 100), 0)}%"
+        percent_value = max(min(percent, 100), 0)
+        self.ids.progress.value = percent_value
+        self.ids.percent.text = f"{round(percent_value)}%"
         restant_time = max(round(time_to_wait - current_relative_time), 0)
         s = restant_time % 60
         m = restant_time // 60 % 60
