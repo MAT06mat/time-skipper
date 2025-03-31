@@ -21,7 +21,7 @@ def update_files():
     os.system("cp -R /mnt/time-skipper/buildozer.spec buildozer.spec")
     print("Update of buildozer.spec and app/ completed")
 
-    from app.main import __version__
+    from app._version import __version__
 
     return __version__
 

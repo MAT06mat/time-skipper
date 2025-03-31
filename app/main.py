@@ -1,11 +1,9 @@
-__version__ = "1.1"
-
-
 from kivymd.app import MDApp
 from kivy.properties import ObjectProperty
 from kivy.storage.jsonstore import JsonStore
 from kivy.core.text import LabelBase
 from root import Root
+from _version import __version__
 import os
 
 
